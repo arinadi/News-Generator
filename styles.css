@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 /* Tailwind CSS Directives */
 @tailwind base;
 @tailwind components;
@@ -5,8 +7,7 @@
 
 /* News Generator - Custom Styles */
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Import Google Fonts - MOVED TO TOP */
 
 /* CSS Variables - Design System */
 :root {
