@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Transform your raw content into professional news articles with AI-powered generation using Google Gemini">
+  <meta name="keywords" content="news generator, AI, article writer, content creation, journalism">
+  <meta name="author" content="News Generator AI">
+  
+  <title>News Generator AI - Transform Content into Professional Articles</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- PDF.js for PDF reading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // Configure PDF.js worker
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  
+  <!-- Mammoth.js for Word document reading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen" style="background-color: #fdfbf7;">
+    <div class="text-center">
+      <div class="text-6xl mb-4 animate-bounce">📰</div>
+      <div class="spinner"></div>
+      <p class="mt-4 text-gray-800 font-semibold" style="font-size: 1.25rem;">Loading News Generator...</p>
+    </div>
+  </div>
+  
+  <!-- React Root -->
+  <div id="root"></div>
+  
+  <!-- Main App Script -->
+  <script type="module" src="/app.jsx"></script>
+</body>
+</html>
