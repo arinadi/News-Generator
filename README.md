@@ -9,10 +9,11 @@ Transform your raw content into professional news articles with AI-powered gener
 - 📰 **Premium Newspaper Aesthetic**: Standardized typography with bold headlines and professional layout
 - 📝 **Multiple Input Methods**: Paste text directly or upload files (TXT, PDF, DOC, DOCX)
 - 🎯 **Smart Title Generation**: Get multiple AI-generated title options automatically
-- ⚙️ **Customizable Settings**: Configure language, tone, style, and goal optimization
+- ⚙️ **Dynamic Instructions**: Tone, Style, and Goal settings now dynamically adjust AI system prompts for superior precision
+- 🔗 **URL Settings Sync**: Your configuration is automatically saved in the URL—perfect for bookmarking or sharing presets
 - 📋 **Complete Export Logic**: Copy, download, print, or email articles—now always including selected or fallback titles
 - 🎨 **Modern & Neat UI**: Responsive design with clean card structures and focus on readability
-- 🔄 **Precision Regeneration**: Independently regenerate the article body, titles, or hashtags
+- 🔄 **Precision Regeneration**: Independently regenerate the article body, titles, or hashtags with optimized 1x API calls
 
 ## 🚀 Quick Start
 
@@ -68,9 +69,10 @@ npm run dev
 3. **Configure Settings**:
    - Choose language, tone, style, and date format
    - Set minimum word count and target optimization goal
+   - *Note: Settings are automatically saved in the URL for easy access later*
 
 4. **Generate Everything**:
-   - Click "Generate Professional News Article" to create titles, body, and hashtags simultaneously
+   - Click "Generate Professional News Article" to create titles, body, and hashtags simultaneously (Optimized minimal API calls)
 
 5. **Refine & Export**:
    - Select your favorite title (or export all of them)

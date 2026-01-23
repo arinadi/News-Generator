@@ -32,12 +32,25 @@ function App() {
   const [error, setError] = useState('');
   const [apiKeyValid, setApiKeyValid] = useState(true);
 
-  // Validate API key on mount
+  // Validate API key on mount and Load settings from URL
   useEffect(() => {
     const validation = validateAPIKey();
     setApiKeyValid(validation.valid);
     if (!validation.valid) {
       setError(validation.message);
+    }
+
+    // Load settings from URL
+    const params = new URLSearchParams(window.location.search);
+    const urlSettings = {};
+    Object.keys(CONFIG.DEFAULTS).forEach(key => {
+      const val = params.get(key);
+      if (val !== null) {
+        urlSettings[key] = isNaN(val) || key !== 'minWordCount' ? val : parseInt(val);
+      }
+    });
+    if (Object.keys(urlSettings).length > 0) {
+      setSettings(prev => ({ ...prev, ...urlSettings }));
     }
 
     // Hide loading screen
@@ -51,6 +64,16 @@ function App() {
       }
     }, 500);
   }, []);
+
+  // Sync settings to URL whenever they change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    Object.entries(settings).forEach(([key, val]) => {
+      params.set(key, val);
+    });
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [settings]);
 
   // Handle input change
   const handleInputChange = (text) => {
