@@ -16,41 +16,50 @@ const ai = new GoogleGenAI({
 });
 
 const GOAL_INSTRUCTIONS = {
-    google_news: "Prioritize Google News Indexing Standards, high-authority indexing, and E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness) signals. Use names of people, organizations, and precise locations (entities).",
-    seo_ranking: "Optimize for General SEO Ranking and long-tail keywords. Focus on search intent and relevant semantic entities to improve organic visibility.",
-    viral_social: "Focus on Social Media Virality. Create high-engagement content with emotional hooks, punchy sentences, and shareable insights.",
-    informational: "Prioritize Informational/Educational value. Deliver deep, clear, and comprehensive explanations with an emphasis on factual accuracy and clarity."
+    google_news: "Prioritize Google News principles: Timeliness, Authority, and Trustworthiness. Focus on factual reporting, clear attribution, and precise entity usage (names, organizations, locations).",
+    seo_ranking: "Optimize for Semantic SEO. Use natural keyword integration, comprehensive topic coverage, and structure the content to answer specific user search intents.",
+    viral_social: "Focus on Shareability and Engagement. Use a compelling narrative voice, emotional resonance, and punchy, memorable phrasing while maintaining accuracy.",
+    informational: "Prioritize Clarity and Depth. transform complex information into accessible, easy-to-digest knowledge. Use analogies where helpful and ensure logical flow."
 };
 
 const TONE_INSTRUCTIONS = {
-    positive: "Use an optimistic, uplifting, and solution-oriented tone. Highlight progress and positive outcomes.",
-    negative: "Use a critical, cautionary, or investigative tone. Highlight risks, challenges, or problematic aspects.",
-    neutral: "Use an objective, balanced, and unbiased tone. Avoid taking sides; present facts as they are."
+    positive: "FORCE a Highly Optimistic Tone. You MUST use uplifting vocabulary (e.g., 'triumph', 'breakthrough', 'visionary', 'success'). Frame every challenge as an opportunity. Focus strictly on benefits and progress.",
+    negative: "FORCE a Critical and Warning Tone. You MUST use cautionary vocabulary (e.g., 'risk', 'crisis', 'failure', 'concern', 'alarming'). Focus on the severity of issues and potential negative consequences.",
+    neutral: "FORCE a Clinical and Detached Tone. You MUST act as a disinterested reporter. BANNED: emotively charged adjectives (e.g., 'exciting', 'terrible', 'wonderful'). vital: Use flat, factual language only."
 };
 
 const STYLE_INSTRUCTIONS = {
-    formal: "Adhere to a strict Formal style. Use sophisticated vocabulary and professional terminology. Maintain professional distance.",
-    professional: "Use a standard Professional journalistic style. Clear, concise, and authoritative without unnecessary jargon.",
-    casual: "Adopt a Casual and accessible style. Use conversational language and simplified sentence structures for a general audience.",
-    friendly: "Use a Friendly and approachable style. Make the content feel inviting and easy to relate to.",
-    authoritative: "Maintain an Authoritative stance. Position the narrative as a definitive expert source with decisive language.",
-    conversational: "Write in a Conversational manner. Speak directly to the reader to build engagement and connection."
+    formal: "Use a Sophisticated and Academic style. Employ precise vocabulary and complex sentence structures where appropriate. Maintain a respectful distance.",
+    professional: "Use a Standard Journalistic style. Be direct, active, and concise. Avoid fluff. Prioritize clarity and information density.",
+    casual: "Use a Conversational and Relatable style. Write as if speaking to a peer. Use contractions and simpler vocabulary, but keep it respectful.",
+    friendly: "Use a Warm and Inviting style. Engage the reader directly ('you'). Use positive reinforcement and an encouraging voice.",
+    authoritative: "Use a Decisive and Expert style. Write with conviction. Avoid hedging (keywords: 'maybe', 'perhaps'). State facts clearly.",
+    conversational: "Use a Narrative and Engaging style. Focus on storytelling and flow. Connect ideas smoothly to keep the reader hooked."
 };
 
 const getSystemInstruction = (tone, style, goal) => {
-    return `You are a Senior SEO Journalist and Editor-in-Chief for a major international news wire service. 
+    return `You are a Senior Editor and expert Journalist. Your goal is to produce content that feels clearly written by a skilled human, not an AI.
 
-**Strict Editorial Guidelines:**
-1. **The Lead (Lede)**: The first paragraph MUST contain the Who, What, Where, When, and Why. 
-2. **Inverted Pyramid**: Information flows from most important to least important.
-3. **Core Directive**: ${GOAL_INSTRUCTIONS[goal] || GOAL_INSTRUCTIONS.google_news}
-4. **Tone & Voice**: ${TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.neutral} ${STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS.professional}
-5. **Freshness**: The dateline is critical for indexing.
-6. **Mobile Readability**: Use clear, declarative sentences and short paragraphs (2-3 sentences).
-7. **Formatting**: Use double newlines (\n\n) between paragraphs.
-8. **Punctuation (KBBI/PUEBI)**: Adhere strictly to Indonesian punctuation standards (if using Indonesian).
-9. **Professional Quotes**: Use double quotation marks ("...") with clear formal attribution.
-10. **No Internal Hashtags**: Never include hashtags inside the 'article' text field.`;
+**Core Writing Principles:**
+1. **Natural Flow**: Vary sentence structure and length. Mix short, punchy sentences with longer, descriptive ones. Avoid repetitive patterns.
+2. **Active Voice**: Use active voice whenever possible (e.g., "The committee decided" instead of "It was decided by the committee").
+3. **Show, Don't Just Tell**: detailed descriptions over generic adjectives.
+4. **Avoid AI Cliches**: generic transitions like "In conclusion," "Furthermore," "It is important to note," or "Delving into."
+5. **Directness**: Get to the point. Cut unnecessary fluff words.
+6. **Tone Amplification**: You must proactively select vocabulary that aligns with the chosen **Tone**. If Positive, use inspiring words. If Negative, use urgent/warning words. If Neutral, use flat words.
+
+**Specific Directions:**
+- **Goal**: ${GOAL_INSTRUCTIONS[goal] || GOAL_INSTRUCTIONS.google_news}
+- **Tone**: ${TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.neutral}
+- **Style**: ${STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS.professional}
+
+**Editorial Standards:**
+- **The Lead (Lede)**: Start strong. The first paragraph must hook the reader and summarize the most critical info (Who, What, Where, When, Why).
+- **Paragraphs**: specific paragraph counts. Let the content dictate the structure, but keep paragraphs digestible (typically 2-5 sentences).
+- **Formatting**: Use double newlines (\n\n) between paragraphs for readability.
+- **Punctuation**: Follow Indonesian standards (KBBI/PUEBI) strictly if writing in Indonesian.
+- **Attribution**: specific quotes ("...") to their sources clearly.
+- **No Internal Hashtags**: NEVER put hashtags inside the article body.`;
 };
 
 const fullSchema = {
@@ -58,17 +67,17 @@ const fullSchema = {
     properties: {
         titles: {
             type: Type.ARRAY,
-            description: "Three SEO-optimized, keyword-rich headline options.",
+            description: "Three engaging, high-CTR, and SEO-optimized headline options.",
             items: { type: Type.STRING }
         },
         hashtags: {
             type: Type.ARRAY,
-            description: "A list of 5-8 SEO-optimized hashtags.",
+            description: "A list of 5-8 relevant, high-traffic hashtags.",
             items: { type: Type.STRING }
         },
         article: {
             type: Type.STRING,
-            description: "The full news article with a clear dateline and inverted pyramid structure."
+            description: "The full news article, formatted with natural paragraph breaks."
         }
     },
     required: ['titles', 'article', 'hashtags']
@@ -79,7 +88,7 @@ const titlesSchema = {
     properties: {
         titles: {
             type: Type.ARRAY,
-            description: "Three new SEO-optimized headline options with high search relevance.",
+            description: "Three new, distinct headline options.",
             items: { type: Type.STRING }
         }
     },
@@ -91,7 +100,7 @@ const hashtagsSchema = {
     properties: {
         hashtags: {
             type: Type.ARRAY,
-            description: "A list of new SEO-optimized hashtags.",
+            description: "A list of new, trending hashtags.",
             items: { type: Type.STRING }
         }
     },
@@ -103,7 +112,7 @@ const articleSchema = {
     properties: {
         article: {
             type: Type.STRING,
-            description: "The rewritten news article, re-optimized for SEO and readability."
+            description: "The rewritten, improved news article."
         }
     },
     required: ['article']
@@ -143,38 +152,32 @@ export const generateNewsArticle = async (
     language
 ) => {
     const contextPrompt = context.trim() 
-        ? `\n**Additional Context (Keywords/Entities to prioritize):**\n---\n${context}\n---`
+        ? `\n**Context & Keywords:**\n${context}`
         : '';
 
     const prompt = `
-        Transform the following source into a high-authority article optimized for ${goal}.
+        Write a high-quality news article based on the following source.
 
-        **Source Text:**
+        **Source Material:**
         ---
         ${inputText}
         ---
         ${contextPrompt}
 
-        **Strict Editorial Requirements:**
-        - **Language:** ${language}
-        - **Optimization Goal:** ${goal}
-        - **Tone:** ${tone}
-        - **Style:** ${style}
-        - **Structure**: Start with a professional Dateline (${dateFormat}).
-        - **The Lede**: The first paragraph must be a hard-news summary (Who, What, Where, When, Why).
-        - **SEO**: Focus on entity recognition (names, places, organizations). Use high-relevance keywords for ${goal}.
-        - **Formatting**: Separate exactly 4-6 paragraphs with double newlines (\n\n). 
-        - **Standards**: Follow the Inverted Pyramid model. Each paragraph must be exactly 2-3 sentences long.
-        - **Punctuation**: Use strict KBBI/PUEBI standards.
-        - **Quotes**: Format quotes professionally with "..." and clear formal attribution.
-        - **Constraint**: DO NOT include any hashtags inside the article text. Keep the article text clean.
+        **Instructions:**
+        1.  **Language**: Write in ${language}.
+        2.  **Date**: Include a dateline (${dateFormat}) at the start.
+        3.  **Structure**: logic of the "Inverted Pyramid"—most important info first.
+        4.  **Flow**: Ensure smooth transitions between paragraphs. meaningful paragraph breaks where the topic shifts or pauses.
+        5.  **Constraints**: 
+            - NO hashtags in the body text.
+            - NO 'Conclusion' headers or summary paragraphs at the end unless typical for the style.
 
-        **Output Requirement:**
-        - You MUST return a JSON object containing:
-          1. 'titles': Array of 3 optimized headline options for ${goal}.
-          2. 'article': The full article text.
-          3. 'hashtags': Array of 5-8 SEO-friendly hashtags.
-        - All content must be in ${language}.
+        **Output**:
+        Return a JSON object with:
+        - 'titles': 3 compelling headlines.
+        - 'article': The full body text.
+        - 'hashtags': 5-8 relevant tags.
     `;
     const instruction = getSystemInstruction(tone, style, goal);
     return generateContentWithSchema(prompt, fullSchema, instruction);
@@ -189,15 +192,14 @@ export const regenerateTitles = async (
     count = 3
 ) => {
     const prompt = `
-        Based on this article, generate ${count} NEW high-CTR headlines in ${language} optimized for ${goal}. 
-        Headline rules: No clickbait, include primary entities, under 70 characters, matching a ${tone} tone.
-
-        **Article:**
-        ---
-        ${article}
-        ---
+        Generate ${count} NEW, distinct headlines for the article below.
+        Language: ${language}.
+        Goal: High CTR and Relevance for ${goal}.
+        
+        **Article Summary:**
+        ${article.substring(0, 500)}...
     `;
-    // For regeneration, we just use the base professional instruction or pass options if we want consistency
+    
     const instruction = getSystemInstruction(tone, style, goal);
     return generateContentWithSchema(prompt, titlesSchema, instruction);
 };
@@ -208,13 +210,12 @@ export const regenerateHashtags = async (
     goal = 'google_news'
 ) => {
     const prompt = `
-        Based on this article, generate NEW SEO-optimized hashtags in ${language} for ${goal}. 
-        Focus on trending keywords and topic entities relevant to ${goal}.
+        Generate a fresh set of SEO-optimized hashtags for the article below.
+        Language: ${language}.
+        Focus: Trending and descriptive tags for ${goal}.
 
-        **Article:**
-        ---
-        ${article}
-        ---
+        **Article Summary:**
+        ${article.substring(0, 500)}...
     `;
     const instruction = getSystemInstruction('neutral', 'professional', goal);
     return generateContentWithSchema(prompt, hashtagsSchema, instruction);
@@ -232,28 +233,26 @@ export const regenerateArticle = async (
     language
 ) => {
     const contextPrompt = context.trim() 
-        ? `\n**Focus Keywords/Context:**\n${context}`
+        ? `\n**Context:** ${context}`
         : '';
 
     const prompt = `
-        Rewrite this draft into a high-quality article optimized for ${goal}. 
-        Focus: Strengthen the lead paragraph, optimize entity placement, and ensure the flow matches a ${tone} tone and ${style} style.
+        Rewrite the following article to match a ${tone} tone and ${style} style.
+        
+        **Original Text:**
+        ${originalArticle}
 
-        **Source Info:** ${inputText}
-        **Original Draft:** ${originalArticle}
+        **Additional Context:**
+        ${inputText}
         ${contextPrompt}
 
-        **Editorial Requirements:**
+        **Directives:**
         - Language: ${language}
-        - Optimization Goal: ${goal}
-        - Tone: ${tone}
-        - Style: ${style}
-        - Structure: Dateline (${dateFormat}) followed by inverted pyramid.
-        - Formatting: ALWAYS use 4-6 distinct, short paragraphs separated by double newlines (\n\n).
-        - Punctuation: Strict KBBI/PUEBI standards.
-        - Quotes: Formal formatting with "..." and clear attribution.
-        - Constraint: Keep the article body text completely free of hashtags.
-        - Objective: Maximum authority and alignment with ${goal} standards.
+        - Dateline: ${dateFormat}
+        - Improve flow and readability.
+        - Use active voice.
+        - Remove any robotic or repetitive phrasing.
+        - NO hashtags in the body.
     `;
     const instruction = getSystemInstruction(tone, style, goal);
     return generateContentWithSchema(prompt, articleSchema, instruction);
