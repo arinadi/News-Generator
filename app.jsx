@@ -134,7 +134,14 @@ function App() {
 
     setIsRegeneratingTitles(true);
     try {
-      const result = await regenerateTitles(article, settings.language, unselectedIndices.length);
+      const result = await regenerateTitles(
+        article, 
+        settings.language, 
+        settings.tone, 
+        settings.style, 
+        settings.goal, 
+        unselectedIndices.length
+      );
       
       const newTitles = [...titles];
       result.titles.forEach((newTitle, i) => {
@@ -152,7 +159,7 @@ function App() {
   const handleRegenerateHashtags = async () => {
     setIsRegeneratingHashtags(true);
     try {
-      const result = await regenerateHashtags(article, settings.language);
+      const result = await regenerateHashtags(article, settings.language, settings.goal);
       setHashtags(result.hashtags);
     } catch (err) {
       setError(err.message);
@@ -176,17 +183,6 @@ function App() {
         settings.language
       );
       setArticle(result.article);
-      
-      // Automatically refresh hashtags when body updates
-      setIsRegeneratingHashtags(true);
-      try {
-        const hashtagsResult = await regenerateHashtags(result.article, settings.language);
-        setHashtags(hashtagsResult.hashtags);
-      } catch (hErr) {
-        console.error('Failed to auto-refresh hashtags:', hErr);
-      } finally {
-        setIsRegeneratingHashtags(false);
-      }
     } catch (err) {
       setError(err.message);
     } finally {

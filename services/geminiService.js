@@ -15,21 +15,43 @@ const ai = new GoogleGenAI({
     apiVersion: 'v1alpha' // Using beta/alpha for structured JSON schemas if needed
 });
 
-const systemInstruction = `You are a Senior SEO Journalist and Editor-in-Chief for a major international news wire service. Your specialty is Google News Optimization, focusing on high-authority indexing and E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness) signals.
+const GOAL_INSTRUCTIONS = {
+    google_news: "Prioritize Google News Indexing Standards, high-authority indexing, and E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness) signals. Use names of people, organizations, and precise locations (entities).",
+    seo_ranking: "Optimize for General SEO Ranking and long-tail keywords. Focus on search intent and relevant semantic entities to improve organic visibility.",
+    viral_social: "Focus on Social Media Virality. Create high-engagement content with emotional hooks, punchy sentences, and shareable insights.",
+    informational: "Prioritize Informational/Educational value. Deliver deep, clear, and comprehensive explanations with an emphasis on factual accuracy and clarity."
+};
 
-Strict Google News Optimization Rules:
-1. **The Lead (Lede)**: The first paragraph MUST contain the Who, What, Where, When, and Why. It must be a complete summary of the news.
-2. **Inverted Pyramid Structure**: Information flows from most important to least important.
-3. **Professional Journalism Tone**: Use objective, neutral, and authoritative language. Avoid clickbait; use accurate, descriptive headlines.
-4. **Entity-Based SEO**: Prioritize names of people, organizations, and precise locations. Google News uses entities to categorize content.
-5. **Freshness & Timeliness**: Ensure the article feels current. The dateline is critical for indexing.
-6. **NLP Optimization**: Use clear, declarative sentences. Avoid complex fluff. Use short paragraphs (2-3 sentences) for mobile readability.
-7. **Structured Formatting**: Use double newlines (\n\n) between paragraphs to ensure clear separation.
-8. **E-E-A-T Signals**: Include attributions for facts and quotes. Use active voice.
-9. **SEO Hashtags**: Generate 5-8 relevant, trending, and SEO-friendly hashtags (broad and niche) for maximum reach. 
-10. **NO HASHTAGS IN BODY**: Never include hashtags inside the 'article' text field. Hashtags must ONLY exist in the 'hashtags' array.
-11. **Punctuation Standards (KBBI/PUEBI)**: Adhere strictly to Indonesian punctuation standards (KBBI/PUEBI). Use proper capitalization, commas, and periods.
-12. **Professional Quotes**: Format quotes clearly using double quotation marks ("..."). Example: "Satu langkah besar bagi keadilan," ujar Supratman. Ensure attributions are clear and formal.`;
+const TONE_INSTRUCTIONS = {
+    positive: "Use an optimistic, uplifting, and solution-oriented tone. Highlight progress and positive outcomes.",
+    negative: "Use a critical, cautionary, or investigative tone. Highlight risks, challenges, or problematic aspects.",
+    neutral: "Use an objective, balanced, and unbiased tone. Avoid taking sides; present facts as they are."
+};
+
+const STYLE_INSTRUCTIONS = {
+    formal: "Adhere to a strict Formal style. Use sophisticated vocabulary and professional terminology. Maintain professional distance.",
+    professional: "Use a standard Professional journalistic style. Clear, concise, and authoritative without unnecessary jargon.",
+    casual: "Adopt a Casual and accessible style. Use conversational language and simplified sentence structures for a general audience.",
+    friendly: "Use a Friendly and approachable style. Make the content feel inviting and easy to relate to.",
+    authoritative: "Maintain an Authoritative stance. Position the narrative as a definitive expert source with decisive language.",
+    conversational: "Write in a Conversational manner. Speak directly to the reader to build engagement and connection."
+};
+
+const getSystemInstruction = (tone, style, goal) => {
+    return `You are a Senior SEO Journalist and Editor-in-Chief for a major international news wire service. 
+
+**Strict Editorial Guidelines:**
+1. **The Lead (Lede)**: The first paragraph MUST contain the Who, What, Where, When, and Why. 
+2. **Inverted Pyramid**: Information flows from most important to least important.
+3. **Core Directive**: ${GOAL_INSTRUCTIONS[goal] || GOAL_INSTRUCTIONS.google_news}
+4. **Tone & Voice**: ${TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.neutral} ${STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS.professional}
+5. **Freshness**: The dateline is critical for indexing.
+6. **Mobile Readability**: Use clear, declarative sentences and short paragraphs (2-3 sentences).
+7. **Formatting**: Use double newlines (\n\n) between paragraphs.
+8. **Punctuation (KBBI/PUEBI)**: Adhere strictly to Indonesian punctuation standards (if using Indonesian).
+9. **Professional Quotes**: Use double quotation marks ("...") with clear formal attribution.
+10. **No Internal Hashtags**: Never include hashtags inside the 'article' text field.`;
+};
 
 const fullSchema = {
     type: Type.OBJECT,
@@ -87,13 +109,13 @@ const articleSchema = {
     required: ['article']
 };
 
-const generateContentWithSchema = async (prompt, schema) => {
+const generateContentWithSchema = async (prompt, schema, customInstruction) => {
     try {
         const response = await ai.models.generateContent({
             model: CONFIG.GEMINI_MODEL,
             contents: prompt,
             config: {
-                systemInstruction,
+                systemInstruction: customInstruction,
                 responseMimeType: 'application/json',
                 responseSchema: schema
             }
@@ -125,7 +147,7 @@ export const generateNewsArticle = async (
         : '';
 
     const prompt = `
-        Transform the following source into a high-authority, Google News-optimized article.
+        Transform the following source into a high-authority article optimized for ${goal}.
 
         **Source Text:**
         ---
@@ -135,7 +157,9 @@ export const generateNewsArticle = async (
 
         **Strict Editorial Requirements:**
         - **Language:** ${language}
-        - **Optimization Goal:** ${goal} (Priority: Google News Indexing Standards)
+        - **Optimization Goal:** ${goal}
+        - **Tone:** ${tone}
+        - **Style:** ${style}
         - **Structure**: Start with a professional Dateline (${dateFormat}).
         - **The Lede**: The first paragraph must be a hard-news summary (Who, What, Where, When, Why).
         - **SEO**: Focus on entity recognition (names, places, organizations). Use high-relevance keywords for ${goal}.
@@ -147,45 +171,53 @@ export const generateNewsArticle = async (
 
         **Output Requirement:**
         - You MUST return a JSON object containing:
-          1. 'titles': Array of 3 Google News-optimized headline options.
-          2. 'article': The full news article text.
+          1. 'titles': Array of 3 optimized headline options for ${goal}.
+          2. 'article': The full article text.
           3. 'hashtags': Array of 5-8 SEO-friendly hashtags.
         - All content must be in ${language}.
     `;
-    return generateContentWithSchema(prompt, fullSchema);
+    const instruction = getSystemInstruction(tone, style, goal);
+    return generateContentWithSchema(prompt, fullSchema, instruction);
 };
 
 export const regenerateTitles = async (
     article,
     language,
+    tone = 'neutral',
+    style = 'professional',
+    goal = 'google_news',
     count = 3
 ) => {
     const prompt = `
-        Based on this article, generate ${count} NEW high-CTR, Google News-optimized headlines in ${language}. 
-        Headline rules: No clickbait, include primary entities, under 70 characters.
+        Based on this article, generate ${count} NEW high-CTR headlines in ${language} optimized for ${goal}. 
+        Headline rules: No clickbait, include primary entities, under 70 characters, matching a ${tone} tone.
 
         **Article:**
         ---
         ${article}
         ---
     `;
-    return generateContentWithSchema(prompt, titlesSchema);
+    // For regeneration, we just use the base professional instruction or pass options if we want consistency
+    const instruction = getSystemInstruction(tone, style, goal);
+    return generateContentWithSchema(prompt, titlesSchema, instruction);
 };
 
 export const regenerateHashtags = async (
     article,
-    language
+    language,
+    goal = 'google_news'
 ) => {
     const prompt = `
-        Based on this article, generate NEW SEO-optimized hashtags in ${language}. 
-        Focus on news-specific trending keywords and topic entities.
+        Based on this article, generate NEW SEO-optimized hashtags in ${language} for ${goal}. 
+        Focus on trending keywords and topic entities relevant to ${goal}.
 
         **Article:**
         ---
         ${article}
         ---
     `;
-    return generateContentWithSchema(prompt, hashtagsSchema);
+    const instruction = getSystemInstruction('neutral', 'professional', goal);
+    return generateContentWithSchema(prompt, hashtagsSchema, instruction);
 };
 
 export const regenerateArticle = async (
@@ -204,23 +236,27 @@ export const regenerateArticle = async (
         : '';
 
     const prompt = `
-        Rewrite this draft into a professional Google News-ready article. 
-        Focus: Strengthen the lead paragraph, optimize entity placement, and ensure inverted pyramid flow.
+        Rewrite this draft into a high-quality article optimized for ${goal}. 
+        Focus: Strengthen the lead paragraph, optimize entity placement, and ensure the flow matches a ${tone} tone and ${style} style.
 
         **Source Info:** ${inputText}
         **Original Draft:** ${originalArticle}
         ${contextPrompt}
 
         **Editorial Requirements:**
-        - Language: ${language}, Optimization: ${goal}.
+        - Language: ${language}
+        - Optimization Goal: ${goal}
+        - Tone: ${tone}
+        - Style: ${style}
         - Structure: Dateline (${dateFormat}) followed by inverted pyramid.
         - Formatting: ALWAYS use 4-6 distinct, short paragraphs separated by double newlines (\n\n).
         - Punctuation: Strict KBBI/PUEBI standards.
         - Quotes: Formal formatting with "..." and clear attribution.
         - Constraint: Keep the article body text completely free of hashtags.
-        - Objective: Maximum authority and trust (E-E-A-T) for Google News algorithms.
+        - Objective: Maximum authority and alignment with ${goal} standards.
     `;
-    return generateContentWithSchema(prompt, articleSchema);
+    const instruction = getSystemInstruction(tone, style, goal);
+    return generateContentWithSchema(prompt, articleSchema, instruction);
 };
 
 export function validateAPIKey() {
