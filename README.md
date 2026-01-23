@@ -6,13 +6,13 @@ Transform your raw content into professional news articles with AI-powered gener
 
 ## ✨ Features
 
+- 📰 **Premium Newspaper Aesthetic**: Standardized typography with bold headlines and professional layout
 - 📝 **Multiple Input Methods**: Paste text directly or upload files (TXT, PDF, DOC, DOCX)
-- 🎯 **Smart Title Generation**: Get 3 AI-generated title options to choose from
-- ⚙️ **Customizable Settings**: Configure language, tone, date format, and word count
-- 🌐 **Multi-language Support**: Generate articles in 7+ languages
-- 📋 **Easy Export**: Copy, download, print, or email generated articles
-- 🎨 **Modern UI**: Beautiful, responsive design with glassmorphism effects
-- 🔄 **Regeneration**: Don't like the result? Regenerate with one click
+- 🎯 **Smart Title Generation**: Get multiple AI-generated title options automatically
+- ⚙️ **Customizable Settings**: Configure language, tone, style, and goal optimization
+- 📋 **Complete Export Logic**: Copy, download, print, or email articles—now always including selected or fallback titles
+- 🎨 **Modern & Neat UI**: Responsive design with clean card structures and focus on readability
+- 🔄 **Precision Regeneration**: Independently regenerate the article body, titles, or hashtags
 
 ## 🚀 Quick Start
 
@@ -63,33 +63,29 @@ npm run dev
    - Upload a file (TXT, PDF, DOC, DOCX)
 
 2. **Add Context** (Optional):
-   - Provide additional background information
-   - Use quick templates for common scenarios
+   - Provide additional background information or instructions
 
 3. **Configure Settings**:
-   - Choose your language
-   - Select the tone (formal, casual, professional, etc.)
-   - Pick a date format
-   - Set minimum word count
+   - Choose language, tone, style, and date format
+   - Set minimum word count and target optimization goal
 
-4. **Generate Titles**:
-   - Click "Generate Title Options"
-   - Choose from 3 AI-generated titles
-   - Regenerate if needed
+4. **Generate Everything**:
+   - Click "Generate Professional News Article" to create titles, body, and hashtags simultaneously
 
-5. **Generate Article**:
-   - Click "Generate Full Article"
-   - Review the generated content
-   - Copy, export, or regenerate as needed
+5. **Refine & Export**:
+   - Select your favorite title (or export all of them)
+   - Regenerate specific sections if needed
+   - Use the standardized action buttons to Copy, Export, Print, or Email
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React 19 (via importmaps - no build process!)
-- **Styling**: Tailwind CSS + Custom CSS
+- **Frontend**: React 19 (Modern functional components)
+- **Build Tool**: Vite (Fast HMR and optimized builds)
+- **Styling**: Tailwind CSS + Custom Typography System
 - **AI Engine**: Google Gemini API (gemini-1.5-flash-latest)
-- **File Processing**: 
-  - PDF.js for PDF files
-  - Mammoth.js for Word documents
+- **Libraries**: 
+  - PDF.js / Mammoth.js (File processing)
+  - Lucide React (Iconography system)
 
 ## 📁 Project Structure
 
@@ -171,4 +167,6 @@ If you encounter any issues or have questions, please open an issue in the repos
 
 ---
 
-**Made with ❤️ using React 19 and Google Gemini AI**
+---
+
+**Created with 💻 #vibescoding using React 19 and Google Gemini AI**
