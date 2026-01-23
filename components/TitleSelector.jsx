@@ -7,7 +7,7 @@ export function TitleSelector({ titles, isLoading, onTitleSelect, onRegenerate, 
   if (isLoading) {
     return (
       <div className="glass-card fade-in">
-        <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+        <h2 className="newspaper-headline">
           📰 Title Options
         </h2>
         <div className="space-y-3">
@@ -30,9 +30,9 @@ export function TitleSelector({ titles, isLoading, onTitleSelect, onRegenerate, 
   return (
     <div className="glass-card fade-in">
       <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+        <h2 className="newspaper-headline">
           <span>📰</span> Title Options
-        </h3>
+        </h2>
         <button
           onClick={onRegenerate}
           className="btn btn-outline btn-sm flex items-center gap-2"
@@ -71,7 +71,7 @@ export function TitleSelector({ titles, isLoading, onTitleSelect, onRegenerate, 
                 <div className="flex-1">
                   <div className="flex items-start gap-2">
                     <span className="font-bold text-gray-400 text-sm">#{index + 1}</span>
-                    <p className="text-xl font-medium leading-snug">
+                    <p className="text-lg font-medium leading-snug">
                       {title}
                     </p>
                   </div>
@@ -91,7 +91,7 @@ export function TitleSelector({ titles, isLoading, onTitleSelect, onRegenerate, 
       )}
 
       <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
-        <p className="text-xl text-muted italic opacity-80">
+        <p className="text-muted italic opacity-80">
           Selected titles will be included in the final article output.
         </p>
         <p className="text-sm text-blue-800 mt-2">

@@ -207,7 +207,7 @@ function App() {
       <div className="container">
         {/* Header */}
         <header className="text-center mb-16 md:mb-20 fade-in">
-          <h1 className="newspaper-headline font-black mb-4 border-b-8 border-current inline-block pb-2 px-6">
+          <h1 className="main-headline mb-4">
             THE NEWS GENERATOR
           </h1>
           <p className="text-lg md:text-2xl text-muted max-w-3xl mx-auto px-4 mt-4 italic opacity-80">
@@ -303,6 +303,7 @@ function App() {
               {/* Full Article Output with Hashtags & Independent Regeneration */}
               <ArticleOutput
                 article={article}
+                titles={titles}
                 hashtags={hashtags}
                 selectedTitles={selectedTitles}
                 isLoading={isGenerating || isRegeneratingArticle}

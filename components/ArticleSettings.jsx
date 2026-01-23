@@ -12,7 +12,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
 
   return (
     <div className="glass-card fade-in">
-      <h2 className="newspaper-headline text-3xl font-bold mb-8">
+      <h2 className="newspaper-headline">
         ⚙️ Article Settings
       </h2>
 
@@ -21,7 +21,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
         <div className="input-group">
           <label className="input-label">Language</label>
           <select
-            className="select-field h-10"
+            className="select-field"
             value={settings.language}
             onChange={(e) => handleChange('language', e.target.value)}
           >
@@ -37,7 +37,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
         <div className="input-group">
           <label className="input-label">Tone</label>
           <select
-            className="select-field h-10"
+            className="select-field"
             value={settings.tone}
             onChange={(e) => handleChange('tone', e.target.value)}
           >
@@ -53,7 +53,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
         <div className="input-group">
           <label className="input-label">Style</label>
           <select
-            className="select-field h-10"
+            className="select-field"
             value={settings.style}
             onChange={(e) => handleChange('style', e.target.value)}
           >
@@ -69,7 +69,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
         <div className="input-group">
           <label className="input-label">Goal Optimization</label>
           <select
-            className="select-field h-10"
+            className="select-field"
             value={settings.goal}
             onChange={(e) => handleChange('goal', e.target.value)}
           >
@@ -85,7 +85,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
         <div className="input-group">
           <label className="input-label">Date Format</label>
           <select
-            className="select-field h-10"
+            className="select-field"
             value={settings.dateFormat}
             onChange={(e) => handleChange('dateFormat', e.target.value)}
           >

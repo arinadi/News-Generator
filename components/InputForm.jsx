@@ -79,7 +79,7 @@ export function InputForm({ onInputChange, onFileUpload }) {
 
   return (
     <div className="glass-card fade-in">
-      <h2 className="newspaper-headline text-3xl font-bold mb-8">
+      <h2 className="newspaper-headline">
         📝 Input Content
       </h2>
 
@@ -102,13 +102,13 @@ export function InputForm({ onInputChange, onFileUpload }) {
         {isLoading ? (
           <div className="py-6">
             <div className="spinner mb-4"></div>
-            <p className="text-muted text-lg">Reading file...</p>
+            <p className="text-muted">Reading file...</p>
           </div>
         ) : uploadedFile ? (
           <div className="py-6">
             <div className="text-6xl mb-4">📄</div>
-            <p className="text-2xl font-semibold mb-2">{uploadedFile.name}</p>
-            <p className="text-lg text-muted">{formatFileSize(uploadedFile.size)}</p>
+            <p className="text-xl font-semibold mb-2">{uploadedFile.name}</p>
+            <p className="text-muted">{formatFileSize(uploadedFile.size)}</p>
             <div className="flex justify-center mt-6">
               <button
                 onClick={(e) => {
@@ -125,10 +125,10 @@ export function InputForm({ onInputChange, onFileUpload }) {
         ) : (
           <div className="py-6">
             <div className="text-6xl mb-4">📁</div>
-            <p className="text-2xl font-semibold mb-2">
+            <p className="text-xl font-semibold mb-2">
               Drop your file here or click to browse
             </p>
-            <p className="text-lg text-muted">
+            <p className="text-muted">
               Supported: TXT, PDF, DOC, DOCX (Max 10MB)
             </p>
           </div>
@@ -137,17 +137,17 @@ export function InputForm({ onInputChange, onFileUpload }) {
 
       {/* Text Input Area */}
       <div className="input-group">
-        <label className="input-label text-xl mb-4">
+        <label className="input-label mb-4">
           Or paste your text directly:
         </label>
         <textarea
-          className="textarea-field text-xl min-h-[300px]"
+          className="textarea-field min-h-[300px]"
           placeholder="Enter or paste your raw text here..."
           value={inputText}
           onChange={handleTextChange}
         />
         <div className="flex justify-between items-center mt-4">
-          <span className="text-lg text-muted">
+          <span className="text-muted">
             {inputText.length.toLocaleString()} characters
           </span>
           {inputText && (

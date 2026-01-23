@@ -100,8 +100,8 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: var(--paper-bg);
   color: var(--text-main);
-  line-height: 1.7;
-  font-size: 1.125rem;
+  line-height: 1.6;
+  font-size: 1rem;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -111,12 +111,35 @@ body {
 h1, h2, h3, h4, .newspaper-headline {
   font-family: 'Lora', serif;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--text-main);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
-h1 { font-size: 3.5rem; margin-bottom: 1.5rem; }
+.newspaper-headline {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--text-main);
+  padding-bottom: 0.5rem;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.main-headline {
+  font-family: 'Lora', serif;
+  font-size: 4rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  border-bottom: 12px double var(--text-main);
+  border-top: 4px solid var(--text-main);
+  padding: 1rem 2rem;
+  display: inline-block;
+  line-height: 1;
+}
+
+h1 { font-size: 3rem; margin-bottom: 1.5rem; }
 h2 { font-size: 2.25rem; margin-bottom: 1.25rem; }
 h3 { font-size: 1.75rem; margin-bottom: 1rem; }
 h4 { font-size: 1.5rem; margin-bottom: 0.75rem; }
@@ -154,19 +177,25 @@ h4 { font-size: 1.5rem; margin-bottom: 0.75rem; }
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  padding: 0 1.25rem;
-  height: 2.75rem; /* Standard Height */
+  padding: 0 1.5rem;
+  height: 3rem;
   min-width: 120px;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   border: none;
   outline: none;
   text-decoration: none;
   position: relative;
-  overflow: hidden;
+  line-height: 1; /* Match icon alignment */
+}
+
+.btn span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
@@ -209,7 +238,7 @@ h4 { font-size: 1.5rem; margin-bottom: 0.75rem; }
 .btn-sm {
   height: 2.5rem;
   min-width: 100px;
-  font-size: 1rem;
+  font-size: 0.875rem;
   padding: 0 1rem;
 }
 
@@ -416,13 +445,26 @@ h4 { font-size: 1.5rem; margin-bottom: 0.75rem; }
   }
 
   .btn {
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: 0.8rem;
+    padding: 0 1.25rem;
+    font-size: 0.9375rem;
+    height: 2.75rem;
   }
 
-  h1 { font-size: 2rem !important; }
-  h2 { font-size: 1.5rem !important; }
-  .article-content p { font-size: 0.95rem !important; line-height: 1.6 !important; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+
+  .main-headline {
+    font-size: 2.5rem;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 8px double var(--text-main);
+  }
+
+  .newspaper-headline {
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .article-content p { font-size: 1rem; line-height: 1.6; }
 }
 
 @media (max-width: 480px) {
@@ -436,7 +478,9 @@ h4 { font-size: 1.5rem; margin-bottom: 0.75rem; }
   }
 
   .btn {
-    width: 100%; /* Make buttons full width on small mobile for better tap target */
+    width: 100%;
+    font-size: 0.875rem;
+    height: 2.5rem;
   }
 }
 
