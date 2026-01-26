@@ -22,10 +22,11 @@ const GOAL_INSTRUCTIONS = {
     informational: "Prioritize Clarity and Depth. transform complex information into accessible, easy-to-digest knowledge. Use analogies where helpful and ensure logical flow."
 };
 
-const TONE_INSTRUCTIONS = {
-    positive: "FORCE a Highly Optimistic Tone. You MUST use uplifting vocabulary (e.g., 'triumph', 'breakthrough', 'visionary', 'success'). Frame every challenge as an opportunity. Focus strictly on benefits and progress.",
-    negative: "FORCE a Critical and Warning Tone. You MUST use cautionary vocabulary (e.g., 'risk', 'crisis', 'failure', 'concern', 'alarming'). Focus on the severity of issues and potential negative consequences.",
-    neutral: "FORCE a Clinical and Detached Tone. You MUST act as a disinterested reporter. BANNED: emotively charged adjectives (e.g., 'exciting', 'terrible', 'wonderful'). vital: Use flat, factual language only."
+const ANGLE_INSTRUCTIONS = {
+    straight: "Report facts only. No emotional framing or value judgement. Use flat, objective language.",
+    impact: "Emphasize public impact strictly using stated facts. Focus on how this affects the community or specific groups without exaggeration.",
+    accountability: "Highlight responsibility, process, and official responses. Focus on the 'who' and 'how' of decision making without making accusations.",
+    human_interest: "Focus on human aspects based only on quoted or described sources. Highlight personal stories if present in the source."
 };
 
 const STYLE_INSTRUCTIONS = {
@@ -37,7 +38,7 @@ const STYLE_INSTRUCTIONS = {
     conversational: "Use a Narrative and Engaging style. Focus on storytelling and flow. Connect ideas smoothly to keep the reader hooked."
 };
 
-const getSystemInstruction = (tone, style, goal) => {
+const getSystemInstruction = (angle, style, goal) => {
     return `You are a Senior Editor and expert Journalist. Your goal is to produce content that feels clearly written by a skilled human, not an AI.
 
 **Core Writing Principles:**
@@ -46,11 +47,11 @@ const getSystemInstruction = (tone, style, goal) => {
 3. **Show, Don't Just Tell**: detailed descriptions over generic adjectives.
 4. **Avoid AI Cliches**: generic transitions like "In conclusion," "Furthermore," "It is important to note," or "Delving into."
 5. **Directness**: Get to the point. Cut unnecessary fluff words.
-6. **Tone Amplification**: You must proactively select vocabulary that aligns with the chosen **Tone**. If Positive, use inspiring words. If Negative, use urgent/warning words. If Neutral, use flat words.
+6. **Angle Direction**: You must frame the story according to the chosen **News Angle**:
+   - ${ANGLE_INSTRUCTIONS[angle] || ANGLE_INSTRUCTIONS.straight}
 
 **Specific Directions:**
 - **Goal**: ${GOAL_INSTRUCTIONS[goal] || GOAL_INSTRUCTIONS.google_news}
-- **Tone**: ${TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.neutral}
 - **Style**: ${STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS.professional}
 
 **Editorial Standards:**
@@ -144,7 +145,7 @@ const generateContentWithSchema = async (prompt, schema, customInstruction) => {
 export const generateNewsArticle = async (
     inputText,
     dateFormat,
-    tone,
+    angle,
     style,
     goal,
     wordCount,
@@ -179,14 +180,14 @@ export const generateNewsArticle = async (
         - 'article': The full body text.
         - 'hashtags': 5-8 relevant tags.
     `;
-    const instruction = getSystemInstruction(tone, style, goal);
+    const instruction = getSystemInstruction(angle, style, goal);
     return generateContentWithSchema(prompt, fullSchema, instruction);
 };
 
 export const regenerateTitles = async (
     article,
     language,
-    tone = 'neutral',
+    angle = 'straight',
     style = 'professional',
     goal = 'google_news',
     count = 3
@@ -200,7 +201,7 @@ export const regenerateTitles = async (
         ${article.substring(0, 500)}...
     `;
     
-    const instruction = getSystemInstruction(tone, style, goal);
+    const instruction = getSystemInstruction(angle, style, goal);
     return generateContentWithSchema(prompt, titlesSchema, instruction);
 };
 
@@ -217,14 +218,14 @@ export const regenerateHashtags = async (
         **Article Summary:**
         ${article.substring(0, 500)}...
     `;
-    const instruction = getSystemInstruction('neutral', 'professional', goal);
+    const instruction = getSystemInstruction('straight', 'professional', goal);
     return generateContentWithSchema(prompt, hashtagsSchema, instruction);
 };
 
 export const regenerateArticle = async (
     inputText,
     dateFormat,
-    tone,
+    angle,
     style,
     goal,
     wordCount,
@@ -237,7 +238,7 @@ export const regenerateArticle = async (
         : '';
 
     const prompt = `
-        Rewrite the following article to match a ${tone} tone and ${style} style.
+        Rewrite the following article to match a ${angle} angle and ${style} style.
         
         **Original Text:**
         ${originalArticle}
@@ -254,7 +255,7 @@ export const regenerateArticle = async (
         - Remove any robotic or repetitive phrasing.
         - NO hashtags in the body.
     `;
-    const instruction = getSystemInstruction(tone, style, goal);
+    const instruction = getSystemInstruction(angle, style, goal);
     return generateContentWithSchema(prompt, articleSchema, instruction);
 };
 

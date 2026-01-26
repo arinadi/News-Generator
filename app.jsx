@@ -124,7 +124,7 @@ function App() {
       const result = await generateNewsArticle(
         inputText,
         settings.dateFormat,
-        settings.tone,
+        settings.angle,
         settings.style,
         settings.goal,
         settings.minWordCount,
@@ -160,7 +160,7 @@ function App() {
       const result = await regenerateTitles(
         article, 
         settings.language, 
-        settings.tone, 
+        settings.angle, 
         settings.style, 
         settings.goal, 
         unselectedIndices.length
@@ -197,7 +197,7 @@ function App() {
       const result = await regenerateArticle(
         inputText,
         settings.dateFormat,
-        settings.tone,
+        settings.angle,
         settings.style,
         settings.goal,
         settings.minWordCount,

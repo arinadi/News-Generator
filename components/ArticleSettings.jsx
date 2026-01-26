@@ -1,5 +1,5 @@
 // ArticleSettings Component
-import React, { useState } from 'react';
+import React from 'react';
 import { CONFIG } from '../config.js';
 
 export function ArticleSettings({ settings, onSettingsChange }) {
@@ -10,13 +10,21 @@ export function ArticleSettings({ settings, onSettingsChange }) {
     });
   };
 
+  const getLabel = (list, val) => list.find(i => i.value === val)?.label;
+  const getDescription = (list, val) => list.find(i => i.value === val)?.description;
+
   return (
     <div className="glass-card fade-in">
-      <h2 className="newspaper-headline">
-        ⚙️ Article Settings
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="newspaper-headline">
+          ⚙️ Article Settings
+        </h2>
+        <span className="bg-primary-50 text-primary-700 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full">
+          Newsroom Mode
+        </span>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
         {/* Language Selection */}
         <div className="input-group">
           <label className="input-label">Language</label>
@@ -33,17 +41,20 @@ export function ArticleSettings({ settings, onSettingsChange }) {
           </select>
         </div>
 
-        {/* Tone Selection */}
+        {/* Angle Selection (Replaces Tone) */}
         <div className="input-group">
-          <label className="input-label">Tone</label>
+          <label className="input-label flex justify-between">
+            <span>News Angle</span>
+            <span className="text-xs font-normal text-muted opacity-80" title="Determines the framing of the report">ℹ️ Framing</span>
+          </label>
           <select
             className="select-field"
-            value={settings.tone}
-            onChange={(e) => handleChange('tone', e.target.value)}
+            value={settings.angle}
+            onChange={(e) => handleChange('angle', e.target.value)}
           >
-            {CONFIG.TONES.map((tone) => (
-              <option key={tone.value} value={tone.value}>
-                {tone.label}
+            {CONFIG.ANGLES.map((angle) => (
+              <option key={angle.value} value={angle.value}>
+                {angle.label}
               </option>
             ))}
           </select>
@@ -51,7 +62,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
 
         {/* Style Selection */}
         <div className="input-group">
-          <label className="input-label">Style</label>
+          <label className="input-label">Writing Style</label>
           <select
             className="select-field"
             value={settings.style}
@@ -67,7 +78,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
 
         {/* Goal Optimization */}
         <div className="input-group">
-          <label className="input-label">Goal Optimization</label>
+          <label className="input-label">Optimization Goal</label>
           <select
             className="select-field"
             value={settings.goal}
@@ -83,7 +94,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
 
         {/* Date Format Selection */}
         <div className="input-group">
-          <label className="input-label">Date Format</label>
+          <label className="input-label">Dateline Format</label>
           <select
             className="select-field"
             value={settings.dateFormat}
@@ -100,62 +111,56 @@ export function ArticleSettings({ settings, onSettingsChange }) {
         {/* Word Count */}
         <div className="input-group">
           <label className="input-label">
-            Minimum Word Count: <span className="text-primary-600 font-bold">{settings.minWordCount}</span>
+            Target Length: <span className="text-primary-600 font-bold">{settings.minWordCount} words</span>
           </label>
           <input
             type="range"
-            min="100"
-            max="2000"
+            min="200"
+            max="1500"
             step="50"
             value={settings.minWordCount}
             onChange={(e) => handleChange('minWordCount', parseInt(e.target.value))}
-            className="w-full mt-1"
-            style={{
-              accentColor: 'var(--primary-500)',
-            }}
+            className="w-full mt-2"
+            style={{ accentColor: 'var(--primary-500)' }}
           />
-          <div className="flex justify-between text-sm text-muted mt-2">
-            <span>100</span>
-            <span>2000</span>
+          <div className="flex justify-between text-xs text-muted mt-1">
+            <span>Brief (200)</span>
+            <span>Feature (1500)</span>
           </div>
         </div>
       </div>
 
-      {/* Settings Preview */}
-      <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-paper-border">
-        <p className="text-sm font-bold mb-3 opacity-60 tracking-wider">CURRENT CONFIGURATION:</p>
-        <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
-          <div>
-            <span className="text-muted">Language:</span>{' '}
-            <span className="font-bold">
-              {CONFIG.LANGUAGES.find(l => l.value === settings.language)?.label}
-            </span>
-          </div>
-          <div>
-            <span className="text-muted">Tone:</span>{' '}
-            <span className="font-bold">
-              {CONFIG.TONES.find(t => t.value === settings.tone)?.label}
-            </span>
-          </div>
-          <div>
-            <span className="text-muted">Style:</span>{' '}
-            <span className="font-bold">
-              {CONFIG.STYLES.find(s => s.value === settings.style)?.label}
-            </span>
-          </div>
-          <div>
-            <span className="text-muted">Target:</span>{' '}
-            <span className="font-bold">
-              {CONFIG.GOALS.find(g => g.value === settings.goal)?.label}
-            </span>
-          </div>
-          <div>
-            <span className="text-muted">Words:</span>{' '}
-            <span className="font-bold text-primary-600">
-              ~{settings.minWordCount}+
-            </span>
-          </div>
-        </div>
+      {/* Enhanced Informative Preview */}
+      <div className="mt-8 pt-6 border-t border-gray-100">
+         <h3 className="text-xs font-bold uppercase tracking-widest text-muted mb-4">
+            EFFECT OF CURRENT CONFIGURATION
+         </h3>
+         
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Angle Effect */}
+            <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+               <div className="text-xs text-blue-600 font-bold mb-1 uppercase">Angle: {getLabel(CONFIG.ANGLES, settings.angle)}</div>
+               <p className="text-xs text-blue-800 leading-relaxed">
+                 {getDescription(CONFIG.ANGLES, settings.angle)}
+               </p>
+            </div>
+
+            {/* Style Effect */}
+            <div className="bg-purple-50/50 p-3 rounded-lg border border-purple-100">
+               <div className="text-xs text-purple-600 font-bold mb-1 uppercase">Style: {getLabel(CONFIG.STYLES, settings.style)}</div>
+               <p className="text-xs text-purple-800 leading-relaxed">
+                 {getDescription(CONFIG.STYLES, settings.style)}
+               </p>
+            </div>
+
+            {/* Goal Effect */}
+            <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
+               <div className="text-xs text-green-600 font-bold mb-1 uppercase">Goal: {getLabel(CONFIG.GOALS, settings.goal)}</div>
+               <p className="text-xs text-green-800 leading-relaxed">
+                 {getDescription(CONFIG.GOALS, settings.goal)}
+               </p>
+            </div>
+         </div>
       </div>
     </div>
   );

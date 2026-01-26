@@ -18,21 +18,22 @@ export const CONFIG = {
     { value: 'zh', label: '中文' },
   ],
 
-  // Tone Options
-  TONES: [
-    { value: 'positive', label: 'Positive' },
-    { value: 'negative', label: 'Negative' },
-    { value: 'neutral', label: 'Neutral' },
+  // News Angles (Replacing Tones)
+  ANGLES: [
+    { value: 'straight', label: 'Straight News', description: 'Report facts only. No emotional framing or value judgement.' },
+    { value: 'impact', label: 'Public Impact', description: 'Emphasize public impact strictly using stated facts.' },
+    { value: 'accountability', label: 'Accountability', description: 'Highlight responsibility, process, and official responses.' },
+    { value: 'human_interest', label: 'Human Interest', description: 'Focus on human aspects based only on quoted sources.' },
   ],
 
   // Style Options
   STYLES: [
-    { value: 'formal', label: 'Formal' },
-    { value: 'professional', label: 'Professional' },
-    { value: 'casual', label: 'Casual' },
-    { value: 'friendly', label: 'Friendly' },
-    { value: 'authoritative', label: 'Authoritative' },
-    { value: 'conversational', label: 'Conversational' },
+    { value: 'formal', label: 'Formal', description: 'Sophisticated and academic. For high-level analysis.' },
+    { value: 'professional', label: 'Professional', description: 'Standard journalistic style. Direct and active.' },
+    { value: 'casual', label: 'Casual', description: 'Conversational and relatable. Good for blogs.' },
+    { value: 'friendly', label: 'Friendly', description: 'Warm and inviting. Engaging for general audiences.' },
+    { value: 'authoritative', label: 'Authoritative', description: 'Decisive and expert. Avoids hedging.' },
+    { value: 'conversational', label: 'Conversational', description: 'Narrative and engaging. Focuses on flow.' },
   ],
 
   // Date Format Options
@@ -46,16 +47,16 @@ export const CONFIG = {
 
   // Goal Options
   GOALS: [
-    { value: 'google_news', label: 'Google News Optimization' },
-    { value: 'seo_ranking', label: 'General SEO Ranking' },
-    { value: 'viral_social', label: 'Social Media Virality' },
-    { value: 'informational', label: 'Informational/Educational' },
+    { value: 'google_news', label: 'Google News Optimization', description: 'Prioritizes timeliness, authority, and factual density.' },
+    { value: 'seo_ranking', label: 'General SEO Ranking', description: 'Focuses on keyword integration and comprehensive coverage.' },
+    { value: 'viral_social', label: 'Social Media Virality', description: 'Optimizes for shareability, hooks, and emotional engagement.' },
+    { value: 'informational', label: 'Informational/Educational', description: 'Prioritizes clarity, depth, and ease of understanding.' },
   ],
 
   // Default Settings
   DEFAULTS: {
     language: 'id',
-    tone: 'neutral',
+    angle: 'straight',
     style: 'professional',
     goal: 'google_news',
     dateFormat: 'DD/MM/YYYY',
