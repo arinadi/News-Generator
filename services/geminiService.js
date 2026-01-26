@@ -130,7 +130,45 @@ const articleSchema = {
     required: ['article']
 };
 
-const generateContentWithSchema = async (prompt, schema, customInstruction) => {
+const generateHash = async (text) => {
+    const msgUint8 = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+const CACHE_KEY_PREFIX = 'gemini_cache_';
+const CACHE_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+const getFromCache = (hash) => {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY_PREFIX + hash);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_EXPIRATION) {
+                return data;
+            }
+            localStorage.removeItem(CACHE_KEY_PREFIX + hash);
+        }
+    } catch (e) {
+        console.warn('Cache read error', e);
+    }
+    return null;
+};
+
+const saveToCache = (hash, data) => {
+    try {
+        const cacheData = {
+            data,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(CACHE_KEY_PREFIX + hash, JSON.stringify(cacheData));
+    } catch (e) {
+        console.warn('Cache write error', e);
+    }
+};
+
+const generateContentWithSchema = async (prompt, schema, customInstruction, bypassCache = false) => {
     try {
         const API_KEY = getApiKey();
         if (!API_KEY) {
@@ -138,6 +176,19 @@ const generateContentWithSchema = async (prompt, schema, customInstruction) => {
         }
 
         const modelId = getModel();
+        
+        // Caching logic
+        const cacheInput = JSON.stringify({ prompt, schema, customInstruction, modelId });
+        const hash = await generateHash(cacheInput);
+        
+        if (!bypassCache) {
+            const cachedResult = getFromCache(hash);
+            if (cachedResult) {
+                console.log('Serving from local cache...');
+                return cachedResult;
+            }
+        }
+
         const ai = new GoogleGenAI({ 
             apiKey: API_KEY,
             apiVersion: 'v1alpha'
@@ -157,7 +208,9 @@ const generateContentWithSchema = async (prompt, schema, customInstruction) => {
             throw new Error('API returned an empty response.');
         }
 
-        return JSON.parse(response.text);
+        const result = JSON.parse(response.text);
+        saveToCache(hash, result);
+        return result;
     } catch (error) {
         console.error("Gemini API Error:", error);
         throw new Error("Failed to get a valid response from the AI. Please check your API key and input.");
@@ -232,7 +285,7 @@ export const regenerateTitles = async (
     `;
     
     const instruction = getSystemInstruction(angle, style, goal);
-    return generateContentWithSchema(prompt, titlesSchema, instruction);
+    return generateContentWithSchema(prompt, titlesSchema, instruction, true);
 };
 
 export const regenerateHashtags = async (
@@ -249,7 +302,7 @@ export const regenerateHashtags = async (
         ${article.substring(0, 500)}...
     `;
     const instruction = getSystemInstruction('straight', 'professional', goal);
-    return generateContentWithSchema(prompt, hashtagsSchema, instruction);
+    return generateContentWithSchema(prompt, hashtagsSchema, instruction, true);
 };
 
 export const regenerateArticle = async (
@@ -292,7 +345,7 @@ export const regenerateArticle = async (
         - Changes are limited to clarity, grammar, and flow.
     `;
     const instruction = getSystemInstruction(angle, style, goal);
-    return generateContentWithSchema(prompt, articleSchema, instruction);
+    return generateContentWithSchema(prompt, articleSchema, instruction, true);
 };
 
 export function validateAPIKey() {
