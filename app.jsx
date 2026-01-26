@@ -7,6 +7,8 @@ import { ContextConfig } from './components/ContextConfig.jsx';
 import { ArticleSettings } from './components/ArticleSettings.jsx';
 import { TitleSelector } from './components/TitleSelector.jsx';
 import { ArticleOutput } from './components/ArticleOutput.jsx';
+import { HistorySidebar } from './components/HistorySidebar.jsx';
+import { ApiKeyConfig } from './components/ApiKeyConfig.jsx';
 import { 
   generateNewsArticle, 
   regenerateTitles, 
@@ -15,6 +17,7 @@ import {
   validateAPIKey 
 } from './services/geminiService.js';
 import { CONFIG } from './config.js';
+import { saveDraft, getDrafts, deleteDraft, clearHistory } from './utils/storage.js';
 
 function App() {
   // State management
@@ -32,13 +35,20 @@ function App() {
   const [error, setError] = useState('');
   const [apiKeyValid, setApiKeyValid] = useState(true);
 
+  // History State
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
   // Validate API key on mount and Load settings from URL
   useEffect(() => {
     const validation = validateAPIKey();
     setApiKeyValid(validation.valid);
-    if (!validation.valid) {
-      setError(validation.message);
-    }
+    setApiKeyValid(validation.valid);
+    // User requested no error on missing key, just hide content
+    // if (!validation.valid) { setError(validation.message); }
+
+    // Load History
+    setHistory(getDrafts());
 
     // Load settings from URL
     const params = new URLSearchParams(window.location.search);
@@ -105,6 +115,26 @@ function App() {
     setSettings(newSettings);
   };
 
+  // Handle History Operations
+  const handleLoadDraft = (draft) => {
+    // Support both old and new (if any) structures, preferring text/context
+    setInputText(draft.inputText || draft.simpleInput || '');
+    setContext(draft.context || '');
+    setSettings(draft.settings);
+    setArticle(draft.output.article);
+    setTitles(draft.output.titles);
+    setHashtags(draft.output.hashtags);
+    setShowHistory(false);
+  };
+
+  const handleDeleteDraft = (id) => {
+    setHistory(deleteDraft(id));
+  };
+
+  const handleClearHistory = () => {
+    setHistory(clearHistory());
+  };
+
   // Unified Generate Content
   const handleGenerateAll = async () => {
     if (!inputText.trim()) {
@@ -136,6 +166,16 @@ function App() {
       setArticle(result.article);
       setHashtags(result.hashtags);
       setSelectedTitles([]); // Don't default check title option
+
+      // Save to History
+      const newHistory = saveDraft({
+        inputText,
+        context,
+        settings,
+        output: result
+      });
+      setHistory(newHistory);
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -221,41 +261,66 @@ function App() {
     );
   };
 
+  // Handle New Session
+  const handleNewSession = () => {
+    if (inputText && !window.confirm('Start a new session? Current input will be lost.')) {
+      return;
+    }
+    setInputText('');
+    setContext('');
+    resetState();
+  };
+
   return (
-    <div className="min-h-screen py-8">
-      <div className="container">
+    <div className="min-h-screen py-8 relative">
+      <HistorySidebar 
+        isOpen={showHistory} 
+        onClose={() => setShowHistory(false)}
+        history={history}
+        onLoad={handleLoadDraft}
+        onDelete={handleDeleteDraft}
+        onClear={handleClearHistory}
+      />
+
+      <div className={`container transition-transform duration-300 ${showHistory ? 'translate-x-64' : ''}`}>
         {/* Header */}
-        <header className="text-center mb-16 md:mb-20 fade-in">
+        <header className="text-center fade-in relative">
           <h1 className="main-headline mb-4">
             THE NEWS GENERATOR
           </h1>
           <p className="text-lg md:text-2xl text-muted max-w-3xl mx-auto px-4 mt-4 italic opacity-80">
             "Your Daily Source for AI-Powered Journalism Excellence"
           </p>
+          
+          <div className="flex justify-end items-center gap-3 mt-6 mb-4 px-4 max-w-4xl mx-auto">
+
+            <button 
+              onClick={() => setShowHistory(true)}
+              className="flex items-center gap-2 text-sm font-bold text-muted hover:text-primary-600 transition-colors bg-white/50 px-4 py-2 rounded-full border border-gray-200 hover:border-primary-300 shadow-sm"
+            >
+
+              <span>History</span>
+              <span className="text-lg">⏳</span>
+            </button>
+            <button 
+              onClick={handleNewSession}
+              className="flex items-center gap-2 text-sm font-bold text-primary-700 hover:text-primary-800 transition-colors bg-white/50 px-4 py-2 rounded-full border border-primary-100 hover:border-primary-200 shadow-sm"
+              title="Start Fresh"
+            >
+              <span>New Session</span>
+              <span className="text-lg">✨</span>
+            </button>
+          </div>
         </header>
 
-        {/* API Key Warning */}
-        {!apiKeyValid && (
-          <div className="glass-card mb-6 bg-red-50 border-2 border-red-300">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">⚠️</span>
-              <div>
-                <h3 className="font-bold text-red-800 mb-2">API Key Required</h3>
-                <p className="text-red-700 mb-2">
-                  Please configure your Google Gemini API key in <code className="bg-red-100 px-2 py-1 rounded">config.js</code>
-                </p>
-                <a
-                  href="https://makersuite.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary inline-flex mt-2"
-                >
-                  Get API Key →
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* API Key Configuration */}
+        <ApiKeyConfig 
+          onConfigSave={() => {
+            const validation = validateAPIKey();
+            setApiKeyValid(validation.valid);
+            if(validation.valid) setError('');
+          }}
+        />
 
         {/* Global Error */}
         {error && (
@@ -277,15 +342,21 @@ function App() {
         )}
 
         {/* Main Content */}
-        <div className="space-y-6">
+        {/* Main Content - Only shown when API Key is valid */}
+        {apiKeyValid && (
+        <div className="space-y-6 fade-in">
           {/* Step 1: Input */}
           <InputForm
+            inputText={inputText}
             onInputChange={handleInputChange}
             onFileUpload={handleFileUpload}
           />
 
           {/* Step 2: Context (Optional) */}
-          <ContextConfig onContextChange={handleContextChange} />
+          <ContextConfig 
+            context={context}
+            onContextChange={handleContextChange} 
+          />
 
           {/* Step 3: Settings */}
           <ArticleSettings
@@ -294,15 +365,15 @@ function App() {
           />
 
           {/* Unified Generate Button */}
-          {inputText && !article && !isGenerating && (
+          {inputText && !isGenerating && (
             <div className="text-center fade-in pb-8">
               <button
                 onClick={handleGenerateAll}
                 className="btn btn-primary h-14 px-10 text-lg shadow-lg hover:scale-[1.02] transition-all"
                 disabled={!apiKeyValid}
               >
-                <span>🚀</span>
-                <span>Generate Professional News Article</span>
+                <span>{article ? '🔄' : '🚀'}</span>
+                <span>{article ? 'Regenerate Full Story' : 'Generate Professional News Article'}</span>
               </button>
             </div>
           )}
@@ -333,6 +404,7 @@ function App() {
             </div>
           )}
         </div>
+        )}
 
         {/* Footer */}
         <footer className="text-center mt-20 border-t border-paper-border pt-12 pb-8 fade-in">

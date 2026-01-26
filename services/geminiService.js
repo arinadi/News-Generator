@@ -1,19 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CONFIG } from '../config.js';
 
-// Get API Key from Environment or Config
-const getApiKey = () => {
-    return CONFIG.GEMINI_API_KEY === 'YOUR_API_KEY_HERE' 
-        ? import.meta.env.VITE_GEMINI_API_KEY 
-        : CONFIG.GEMINI_API_KEY;
+// Helper to set defaults if needed, though mostly handled by UI
+export const getApiKey = () => {
+    return localStorage.getItem('gemini_api_key') || '';
 };
 
-// Initialize GoogleGenAI
-const API_KEY = getApiKey();
-const ai = new GoogleGenAI({ 
-    apiKey: API_KEY || "",
-    apiVersion: 'v1alpha' // Using beta/alpha for structured JSON schemas if needed
-});
+export const getModel = () => {
+    return localStorage.getItem('gemini_model') || 'gemini-3-flash-preview';
+};
+
+// We receive urgency to instantiate on demand
+// Removed static `const ai = ...`
 
 const GOAL_INSTRUCTIONS = {
     google_news: "Prioritize Google News principles: Timeliness, Authority, and Trustworthiness. Focus on factual reporting, clear attribution, and precise entity usage (names, organizations, locations).",
@@ -38,8 +36,15 @@ const STYLE_INSTRUCTIONS = {
     conversational: "Use a Narrative and Engaging style. Focus on storytelling and flow. Connect ideas smoothly to keep the reader hooked."
 };
 
-const getSystemInstruction = (angle, style, goal) => {
+export const getSystemInstruction = (angle, style, goal) => {
     return `You are a Senior Editor and expert Journalist. Your goal is to produce content that feels clearly written by a skilled human, not an AI.
+
+**NON‑NEGOTIABLE JOURNALISM RULES (NEWS MODE):**
+1. You MUST NOT add facts, data, causes, impacts, or quotes that are not explicitly present in the Source Material or Context.
+2. You MUST NOT speculate, infer motives, predict outcomes, or generalize impacts.
+3. If information is missing or unclear, you MUST state this explicitly.
+4. Clearly separate FACTS from STATEMENTS and attribute opinions to named sources.
+5. Neutrality OVERRIDES tone or style instructions if there is any conflict.
 
 **Core Writing Principles:**
 1. **Natural Flow**: Vary sentence structure and length. Mix short, punchy sentences with longer, descriptive ones. Avoid repetitive patterns.
@@ -60,7 +65,13 @@ const getSystemInstruction = (angle, style, goal) => {
 - **Formatting**: Use double newlines (\n\n) between paragraphs for readability.
 - **Punctuation**: Follow Indonesian standards (KBBI/PUEBI) strictly if writing in Indonesian.
 - **Attribution**: specific quotes ("...") to their sources clearly.
-- **No Internal Hashtags**: NEVER put hashtags inside the article body.`;
+- **No Internal Hashtags**: NEVER put hashtags inside the article body.
+
+**FINAL SELF‑CHECK BEFORE ANSWERING:**
+- Can every factual statement be traced directly to the Source Material or Context?
+- Are all opinions clearly attributed to identifiable sources?
+- Are dates, numbers, and locations explicitly stated or omitted if unknown?
+If any answer is NO, revise before responding.`;
 };
 
 const fullSchema = {
@@ -121,8 +132,19 @@ const articleSchema = {
 
 const generateContentWithSchema = async (prompt, schema, customInstruction) => {
     try {
+        const API_KEY = getApiKey();
+        if (!API_KEY) {
+            throw new Error("API Key is missing. Please configure it in the settings.");
+        }
+
+        const modelId = getModel();
+        const ai = new GoogleGenAI({ 
+            apiKey: API_KEY,
+            apiVersion: 'v1alpha'
+        });
+
         const response = await ai.models.generateContent({
-            model: CONFIG.GEMINI_MODEL,
+            model: modelId,
             contents: prompt,
             config: {
                 systemInstruction: customInstruction,
@@ -174,6 +196,11 @@ export const generateNewsArticle = async (
             - NO hashtags in the body text.
             - NO 'Conclusion' headers or summary paragraphs at the end unless typical for the style.
 
+        **FACT DISCIPLINE:**
+        - Use ONLY information explicitly present in the Source Material or Context.
+        - Do NOT add background, causes, or impacts unless clearly stated.
+        - If details are unavailable, state that they have not yet been disclosed.
+
         **Output**:
         Return a JSON object with:
         - 'titles': 3 compelling headlines.
@@ -197,6 +224,9 @@ export const regenerateTitles = async (
         Language: ${language}.
         Goal: High CTR and Relevance for ${goal}.
         
+        **HEADLINE RULES:**
+        - Headlines MUST accurately reflect the article content.
+
         **Article Summary:**
         ${article.substring(0, 500)}...
     `;
@@ -254,6 +284,12 @@ export const regenerateArticle = async (
         - Use active voice.
         - Remove any robotic or repetitive phrasing.
         - NO hashtags in the body.
+
+        **EDITORIAL CONSTRAINTS:**
+        - Do NOT change factual meaning.
+        - Preserve all names, numbers, dates, and quotes exactly.
+        - Do NOT soften, exaggerate, or reframe critical facts.
+        - Changes are limited to clarity, grammar, and flow.
     `;
     const instruction = getSystemInstruction(angle, style, goal);
     return generateContentWithSchema(prompt, articleSchema, instruction);
@@ -262,10 +298,10 @@ export const regenerateArticle = async (
 export function validateAPIKey() {
     const key = getApiKey();
 
-    if (!key || key === 'YOUR_API_KEY_HERE') {
+    if (!key) {
         return {
             valid: false,
-            message: 'Please configure your Google Gemini API key in .env or config.js',
+            message: 'Internal: API Key missing', // Message used by UI logic
         };
     }
     

@@ -1,6 +1,6 @@
-// ArticleSettings Component
 import React from 'react';
 import { CONFIG } from '../config.js';
+import { getSystemInstruction } from '../services/geminiService.js';
 
 export function ArticleSettings({ settings, onSettingsChange }) {
   const handleChange = (key, value) => {
@@ -136,7 +136,7 @@ export function ArticleSettings({ settings, onSettingsChange }) {
             EFFECT OF CURRENT CONFIGURATION
          </h3>
          
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Angle Effect */}
             <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                <div className="text-xs text-blue-600 font-bold mb-1 uppercase">Angle: {getLabel(CONFIG.ANGLES, settings.angle)}</div>
@@ -161,6 +161,19 @@ export function ArticleSettings({ settings, onSettingsChange }) {
                </p>
             </div>
          </div>
+
+         {/* System Prompt Preview */}
+         <details className="group">
+            <summary className="flex items-center gap-2 cursor-pointer text-xs font-bold uppercase tracking-widest text-muted hover:text-primary-600 transition-colors">
+               <span className="group-open:rotate-90 transition-transform">▶</span>
+               <span>View System Prompt (Transparency)</span>
+            </summary>
+            <div className="mt-4 bg-gray-900 rounded-lg p-4 overflow-x-auto shadow-inner">
+               <pre className="text-[10px] leading-relaxed font-mono text-gray-300 whitespace-pre-wrap">
+                  {getSystemInstruction(settings.angle, settings.style, settings.goal)}
+               </pre>
+            </div>
+         </details>
       </div>
     </div>
   );

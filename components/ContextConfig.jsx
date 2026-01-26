@@ -1,12 +1,12 @@
 // ContextConfig Component
 import React, { useState } from 'react';
 
-export function ContextConfig({ onContextChange }) {
-  const [context, setContext] = useState('');
+export function ContextConfig({ context, onContextChange }) {
+  // Removed local state: const [context, setContext] = useState('');
 
   const handleContextChange = (e) => {
     const value = e.target.value;
-    setContext(value);
+    // Removed setContext(value);
     onContextChange(value);
   };
 
@@ -42,7 +42,7 @@ export function ContextConfig({ onContextChange }) {
           {context && (
             <button
               onClick={() => {
-                setContext('');
+                // setContext(''); // Controlled by parent now
                 onContextChange('');
               }}
               className="btn btn-outline btn-sm flex items-center gap-2"

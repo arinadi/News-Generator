@@ -2,8 +2,8 @@
 import React, { useState, useRef } from 'react';
 import { readFile, formatFileSize } from '../utils/fileReader.js';
 
-export function InputForm({ onInputChange, onFileUpload }) {
-  const [inputText, setInputText] = useState('');
+export function InputForm({ inputText, onInputChange, onFileUpload }) {
+  // Removed local state: const [inputText, setInputText] = useState('');
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +12,7 @@ export function InputForm({ onInputChange, onFileUpload }) {
 
   const handleTextChange = (e) => {
     const text = e.target.value;
-    setInputText(text);
+    // setInputText(text); // Controlled by parent
     onInputChange(text);
     setError('');
   };
@@ -30,7 +30,7 @@ export function InputForm({ onInputChange, onFileUpload }) {
         size: file.size,
         type: file.type,
       });
-      setInputText(text);
+      // setInputText(text); // Controlled by parent
       onFileUpload(text, file);
       onInputChange(text);
     } catch (err) {
@@ -64,7 +64,7 @@ export function InputForm({ onInputChange, onFileUpload }) {
   };
 
   const handleClear = () => {
-    setInputText('');
+    // setInputText(''); // Controlled by parent
     setUploadedFile(null);
     setError('');
     onInputChange('');
