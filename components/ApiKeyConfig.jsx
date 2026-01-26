@@ -54,11 +54,11 @@ export function ApiKeyConfig({ onConfigSave }) {
   };
 
   const MODELS = [
-    { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash Preview (Recommended - Balanced)' },
-    { value: 'gemini-3-pro-preview', label: 'Gemini 3 Pro Preview (Most Intelligent)' },
-    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Stable)' },
-    { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash-Lite (Ultra Fast)' },
-    { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro (Thinking/Reasoning)' },
+    { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash Preview (Most Balanced - Speed & Scale)' },
+    { value: 'gemini-3-pro-preview', label: 'Gemini 3 Pro Preview (Most Intelligent - Frontier Intelligence)' },
+    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Stable - Price-Performance)' },
+    { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash-Lite (Ultra Fast - Cost-Efficient)' },
+    { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro (Thinking/Reasoning - Advanced)' },
   ];
 
   return (

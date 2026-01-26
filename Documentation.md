@@ -57,7 +57,7 @@ News Generator AI is a modern web application that transforms raw content into p
   - Dark mode support
 
 ### AI Integration
-- **Google Gemini API**: gemini-1.5-flash-latest model
+- **Google Gemini API**: gemini-3-flash-preview model
 - **Retry Logic**: Automatic retry with exponential backoff
 - **Error Handling**: Comprehensive error messages
 - **Rate Limiting**: Handles API rate limits gracefully
@@ -104,30 +104,15 @@ NewsGenerator/
 
 ### 2. Configure API Key
 
-**Option 1: Environment Variables (Recommended)**
+The application handles API keys securely via the user interface and browser local storage.
 
-1. Copy `.env.example` to `.env`:
-```bash
-copy .env.example .env
-```
+1.  **Open the App**: Run the development server and open it in your browser.
+2.  **Access Config**: Click the **"Configure"** button in the **AI Configuration** card at the top.
+3.  **Enter Key**: Paste your Google Gemini API Key.
+4.  **Save**: Click **"Save Configuration"**. Your key will be saved in your browser's local storage and used for all subsequent requests.
 
-2. Edit `.env` and add your API key:
-```env
-VITE_GEMINI_API_KEY=your-actual-api-key-here
-```
+> **💡 Privacy Note:** Your API key never leaves your browser (except to communicate with Google's API) and is never stored on a server.
 
-**Option 2: Hardcode in config.js (Development Only)**
-
-Open `config.js` and replace the placeholder:
-
-```javascript
-export const CONFIG = {
-  GEMINI_API_KEY: 'your-actual-api-key-here',
-  // ... rest of config
-};
-```
-
-> **⚠️ Warning:** Never commit real API keys to Git. Use environment variables for production.
 
 ### 3. Run the Application
 
@@ -195,7 +180,7 @@ npm run preview
 
 ```javascript
 {
-  model: 'gemini-1.5-flash-latest',
+  model: 'gemini-3-flash-preview',
   temperature: 0.7,
   topK: 40,
   topP: 0.95,

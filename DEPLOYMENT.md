@@ -33,14 +33,8 @@ vercel --prod
 5. Vercel will auto-detect Vite and configure build settings
 6. Click "Deploy"
 
-### Environment Variables (Vercel)
-
-If you want to use environment variables for API key:
-
-1. Go to your project settings on Vercel
-2. Navigate to "Environment Variables"
-3. Add: `VITE_GEMINI_API_KEY` = your-api-key
-4. Update `config.js` to use: `import.meta.env.VITE_GEMINI_API_KEY`
+### User-Side Configuration
+Unlike traditional apps, this news generator stores the API key on the user's side (localStorage). Users just need to enter their key once in the app's configuration UI. No server-side environment variables are required for the API key.
 
 ---
 
@@ -85,11 +79,8 @@ npm run build
 2. Go to [netlify.com/drop](https://app.netlify.com/drop)
 3. Drag and drop the `dist` folder
 
-### Environment Variables (Netlify)
-
-1. Go to Site settings → Environment variables
-2. Add: `VITE_GEMINI_API_KEY` = your-api-key
-3. Update `config.js` to use: `import.meta.env.VITE_GEMINI_API_KEY`
+### User-Side Configuration
+Same as other platforms, no server-side environment variables are needed for the API key.
 
 ---
 
@@ -107,30 +98,8 @@ npm run build
 
 ## 🔒 Security Best Practices
 
-### For Production Deployment:
-
-1. **Use Environment Variables**:
-   - Don't commit API keys to Git
-   - Use `.env` files (add to `.gitignore`)
-   - Configure environment variables in hosting platform
-
-2. **API Key Restrictions** (Google Cloud Console):
-   - Set HTTP referrer restrictions
-   - Limit to your domain only
-   - Set usage quotas
-
-3. **Example `.env` file**:
-```env
-VITE_GEMINI_API_KEY=your-api-key-here
-```
-
-4. **Update `config.js`**:
-```javascript
-export const CONFIG = {
-  GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY || 'YOUR_API_KEY_HERE',
-  // ... rest of config
-};
-```
+- [ ] Ensure all code is committed.
+- [ ] Test build locally.
 
 ---
 

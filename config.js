@@ -1,10 +1,7 @@
 // Configuration for News Generator Application
 export const CONFIG = {
-  // Google Gemini API Configuration
-  // Priority: 1. Environment Variable, 2. Hardcoded (for development)
-  // For production, set VITE_GEMINI_API_KEY in your hosting platform
-  GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY || 'YOUR_API_KEY_HERE',
-  GEMINI_MODEL: 'gemini-flash-latest',
+  // Google Gemini API Configuration is now handled via the UI (stored in localStorage)
+  GEMINI_MODEL: 'gemini-3-flash-preview',
   GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models',
 
   // Language Options
